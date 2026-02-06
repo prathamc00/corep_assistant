@@ -1,49 +1,201 @@
-# COREP Assistant
+# LLM-Assisted PRA COREP Reporting Assistant (Prototype)
 
-An AI-powered assistant for generating and validating COREP (Common Reporting) regulatory reports for UK banks. It uses RAG (Retrieval Augmented Generation) to grounding its outputs in official PRA rulebooks.
+This project demonstrates an **AI-assisted regulatory reporting system** for UK banks regulated by the **Prudential Regulation Authority (PRA)** under the **COREP** reporting framework.
 
-## Project Status
-**Active.** Fully migrated to local Ollama inference.
+The prototype focuses on **COREP Template C01.00 — Own Funds** and shows how an LLM can:
 
-## Prerequisites
-- **Python 3.11** (System Interpreter recommended due to library compatibility)
-- **Ollama** running locally (Download from [ollama.com](https://ollama.com))
+* Retrieve relevant PRA Rulebook text (RAG)
+* Interpret rules for a reporting scenario
+* Generate structured COREP field outputs
+* Render a human-readable COREP extract
+* Apply validation checks to detect prudential inconsistencies
 
-## Setup
-1. **Clone & Install Dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-   *Note: Ensure `langchain-ollama` is installed.*
+The system runs **fully offline** using Ollama + Llama 3.1 (no API keys required).
 
-2. **Pull LLM Model**
-   The project is configured to use `llama3.1`. Run this in your terminal:
-   ```bash
-   ollama pull llama3.1
-   ```
+---
 
-3. **Ingest Documents (Optional)**
-   The vector store is pre-built in `vectorstore/`. To rebuild it from PDF docs:
-   ```bash
-   python ingestion/embedder.py
-   ```
+## 🧠 What This Prototype Demonstrates
 
-## Usage
-Run the reporter test script to generate a report based on a sample scenario:
+End-to-end flow:
 
-```bash
+```
+User scenario
+   ↓
+Retrieve PRA rule text (vector RAG)
+   ↓
+LLM reasoning (local model)
+   ↓
+Structured COREP JSON output
+   ↓
+Template rendering
+   ↓
+Validation engine flags inconsistencies
+```
+
+This is not a chatbot — it is a **rule-aware regulatory reporting assistant**.
+
+---
+
+## 🏗️ Architecture
+
+See: `Architecture.png`
+
+## 🔄 Workflow
+
+See: `workflow.png`
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the repository
+
+```
+git clone https://github.com/prathamc00/corep_assistant.git
+cd corep_assistant
+```
+
+### 2. Create and activate virtual environment
+
+**Windows**
+
+```
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+**Mac/Linux**
+
+```
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```
+pip install -r requirements.txt
+```
+
+### 4. Install Ollama and pull model
+
+Download Ollama: [https://ollama.com](https://ollama.com)
+
+Then run:
+
+```
+ollama pull llama3.1
+```
+
+---
+
+## 📄 Download Required PRA Documents
+
+This project uses PRA Rulebook PDFs as its knowledge base.
+
+These are **not included** in the repo.
+
+Open `docs/README.txt` and download the required PDFs into the `/docs` folder.
+
+---
+
+## 🧱 Build the Vector Store (RAG memory)
+
+After placing the PDFs in `/docs`, run:
+
+```
+python ingestion/embedder.py
+```
+
+This creates the local `vectorstore/` used for rule retrieval.
+
+---
+
+## ▶️ Run the System
+
+### Test retrieval only (RAG test)
+
+```
+python test_retrieval.py
+```
+
+### Run full COREP reporting assistant
+
+```
 python test_reporter.py
 ```
 
-### Output
-The script will:
-1. Embed the input scenario.
-2. Retrieve relevant PRA rules from ChromaDB.
-3. Query the local Ollama model to generate a JSON report.
-4. Render the report as a table.
-5. Run validation rules to check for calculation errors.
+---
 
-## Architecture
-- **Ingestion**: `PyPDFLoader` -> `RecursiveCharacterTextSplitter` -> `SentenceTransformer` -> `ChromaDB`.
-- **Generation**: `ChatOllama` (Llama 3.1) -> JSON Output.
-- **Validation**: Python-based rule checking (`validator/rules.py`).
+## ✅ Example Output
+
+```
+COREP C01.00 — Own Funds
+
+Code      Field                              Value
+------------------------------------------------------------
+010       Common Equity Tier 1               65
+
+VALIDATION FLAGS:
+- CET1 calculation mismatch. Expected 55 based on deductions, got 65.
+```
+
+This demonstrates:
+
+* LLM populates COREP field
+* Validation engine detects prudential error
+
+---
+
+## 📁 Project Structure
+
+```
+docs/                → Instructions to download PRA PDFs
+ingestion/           → PDF chunking & embedding
+llm/                 → LLM reporting logic & schema
+renderer/            → COREP template view
+validator/           → Prudential validation rules
+
+test_retrieval.py    → RAG test
+test_reporter.py     → End-to-end demo
+```
+
+---
+
+## 🧩 Technologies Used
+
+* Python
+* LangChain (modular v1 packages)
+* ChromaDB (vector store)
+* Sentence Transformers (embeddings)
+* Ollama
+* Llama 3.1 (local LLM)
+
+---
+
+## 🎯 Key Features
+
+* Retrieval-Augmented Generation over PRA Rulebook
+* Schema-constrained COREP output
+* Human-readable template rendering
+* Validation engine for prudential consistency
+* Fully offline execution (no API usage)
+
+---
+
+## 📌 Notes
+
+* `vectorstore/` is not committed (generated locally)
+* PRA PDFs are not committed (see `docs/README.txt`)
+* No API keys required
+
+---
+
+## 📚 Purpose
+
+This prototype illustrates how LLMs can be safely used in regulated environments with:
+
+* Traceability
+* Structured outputs
+* Validation safeguards
+* Human oversight
