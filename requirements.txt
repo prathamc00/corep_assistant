@@ -1,0 +1,18 @@
+# Core Dependencies
+langchain-core
+langchain-community
+langchain-text-splitters
+python-dotenv
+pydantic
+
+# Vector Store & Embeddings
+chromadb
+sentence-transformers
+langchain-huggingface
+
+# LLM Providers
+langchain-ollama  # Main local provider
+
+
+# Utilities
+tiktoken  # Needed for some OpenAI/LangChain functionality

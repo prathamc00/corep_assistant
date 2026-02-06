@@ -4,7 +4,7 @@ load_dotenv()
 
 import chromadb
 from sentence_transformers import SentenceTransformer
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 from llm.schema import CorepReport
 import json
@@ -20,9 +20,10 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 client = chromadb.PersistentClient(path=str(VECTORSTORE_DIR))
 collection = client.get_or_create_collection(name="langchain")
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash",
-    temperature=0
+llm = ChatOllama(
+    model="llama3.1",
+    temperature=0,
+    format="json"
 )
 
 
